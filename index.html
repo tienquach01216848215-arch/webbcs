@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dược sĩ Vỹ - Hỗ trợ sức khỏe toàn diện, kín đáo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; color: #333; }
+        header { background-color: #ffffff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .logo { font-size: 22px; font-weight: bold; color: #1d3557; }
+        .cart { font-size: 15px; font-weight: 600; cursor: pointer; color: #4a4a4a; }
+        main { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        /* Banner & Tư vấn */
+        .banner { display: flex; align-items: center; background-color: #ffffff; border-radius: 8px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .banner-image { width: 50%; height: 350px; object-fit: cover; background-color: #eaeaea; }
+        .banner-text { width: 50%; padding: 40px; }
+        .banner-text h1 { font-size: 26px; color: #1d3557; margin-bottom: 15px; }
+        .form-consult { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; max-width: 350px; }
+        .form-consult input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .form-consult button { background-color: #1d3557; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        .form-consult button:hover { background-color: #e63946; }
+
+        /* Products Grid */
+        .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); grid-gap: 20px; margin-top: 30px; }
+        .product-card { background-color: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eaeaea; display: flex; flex-direction: column; justify-content: space-between; }
+        .badge-khuyen-dung { background-color: #1d3557; color: white; font-size: 11px; padding: 4px 8px; border-radius: 3px; font-weight: 600; align-self: flex-start; margin-bottom: 10px; }
+        .product-image { width: 100%; height: 180px; object-fit: contain; }
+        .product-card h3 { font-size: 14px; font-weight: bold; margin: 10px 0 5px 0; height: 40px; overflow: hidden; }
+        .price { font-size: 16px; font-weight: bold; color: #e63946; margin: 10px 0; }
+        .btn-buy { background-color: #eef3f7; color: #1d3557; border: 1px solid #1d3557; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .btn-buy:hover { background-color: #1d3557; color: white; }
+
+        /* Khối mua hàng nhanh */
+        .order-zone { background: white; padding: 30px; border-radius: 8px; margin-top: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .order-zone h2 { color: #1d3557; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">DƯỢC SĨ VỸ</div>
+        <div class="cart"><i class="fas fa-shopping-cart"></i> Giỏ Hàng (<span id="cart-count">0</span>)</div>
+    </header>
+
+    <main>
+        <div class="banner">
+            <img src="public/duocsyvy.jpg" alt="Dược sĩ Vỹ tư vấn" class="banner-image">
+            <div class="banner-text">
+                <h1>ĐĂNG KÝ TƯ VẤN BẢO MẬT</h1>
+                <p><i class="fas fa-shield-alt"></i> Nhập thông tin bên dưới, Dược sĩ Vỹ sẽ trực tiếp liên hệ hỗ trợ chu đáo, che tên kín đáo.</p>
+                <div class="form-consult">
+                    <input type="text" id="consult-name" placeholder="Tên của bạn (hoặc Biệt danh bí mật)">
+                    <input type="text" id="consult-phone" placeholder="Số điện thoại nhận cuộc gọi">
+                    <input type="text" id="consult-need" placeholder="Vấn đề hoặc Sản phẩm cần tư vấn (Không bắt buộc)">
+                    <button onclick="guiYeuCauTuVan()"><i class="fas fa-paper-plane"></i> Gửi Yêu Cầu Cho Vỹ</button>
+                </div>
+            </div>
+        </div>
+
+        <h2 style="color: #1d3557; font-size: 22px; margin-bottom: 20px;"><i class="fas fa-star"></i> Sản Phẩm Khuyên Dùng</h2>
+        <div class="products">
+            
+            <div class="product-card">
+                <div>
+                    <span class="badge-khuyen-dung"><i class="fas fa-thumbs-up"></i> Khuyên Dùng</span>
+                    <img src="public/durex.jpg" alt="Bao Cao Su Durex Invisible" class="product-image">
+                    <h3>Bao Cao Su Durex Invisible Siêu Mỏng</h3>
+                </div>
+                <div>
+                    <p class="price">499.000 đ</p>
+                    <button class="btn-buy" onclick="themVaoGio(1, 'Durex Invisible', 499000)"><i class="fas fa-plus"></i> Thêm vào đơn</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div>
+                    <span class="badge-khuyen-dung">Bán Chạy</span>
+                    <img src="public/safefit.jpg" alt="Bao Cao Su Safefit" class="product-image">
+                    <h3>Bao Cao Su Safefit Siêu Khít Kéo Dài Thời Gian</h3>
+                </div>
+                <div>
+                    <p class="price">395.000 đ</p>
+                    <button class="btn-buy" onclick="themVaoGio(2, 'Safefit', 395000)"><i class="fas fa-plus"></i> Thêm vào đơn</button>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="order-zone">
+            <h2>🛒 Tiến Hành Đặt Hàng Kín Đáo</h2>
+            <div class="form-consult" style="max-width: 500px;">
+                <input type="text" id="order-name" placeholder="Họ và tên người nhận hàng">
+                <input type="text" id="order-phone" placeholder="Số điện thoại nhận hàng chính xác">
+                <input type="text" id="order-address" placeholder="Địa chỉ giao hàng cụ thể">
+                <button style="background-color: #e63946;" onclick="datHangKindo()">Xác Nhận Đặt Hàng (Gói Hộp Kín)</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Sửa đường dẫn trỏ thẳng về Backend Localhost chạy trên máy
+       const API_URL = '/api';
+        let gioHang = [];
+
+        function themVaoGio(id, title, price) {
+            gioHang.push({ productId: id, title: title, quantity: 1, price: price });
+            document.getElementById('cart-count').innerText = gioHang.length;
+            alert(`Đã thêm ${title} vào danh sách!`);
+        }
+
+        function guiYeuCauTuVan() {
+            const name = document.getElementById('consult-name').value;
+            const phone = document.getElementById('consult-phone').value;
+            const need = document.getElementById('consult-need').value;
+
+            if(!name || !phone) {
+                alert("Vui lòng nhập tên và số điện thoại!");
+                return;
+            }
+
+            fetch(`${API_URL}/counseling/request`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ customerName: name, customerPhone: phone, productNeed: need })
+            })
+            .then(res => res.json())
+            .then(data => alert(data.message));
+        }
+
+        function datHangKindo() {
+            const name = document.getElementById('order-name').value;
+            const phone = document.getElementById('order-phone').value;
+            const address = document.getElementById('order-address').value;
+
+            if(!name || !phone || !address) {
+                alert("Vui lòng điền đầy đủ thông tin giao hàng!");
+                return;
+            }
+            if(gioHang.length === 0) {
+                alert("Giỏ hàng đang trống!");
+                return;
+            }
+
+            fetch(`${API_URL}/checkout`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ customerName: name, customerPhone: phone, customerAddress: address, cartItems: gioHang })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                gioHang = [];
+                document.getElementById('cart-count').innerText = 0;
+            });
+        }
+    </script>
+</body>
+</html>

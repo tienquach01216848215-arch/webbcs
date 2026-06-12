@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Trị - Dược sĩ Vỹ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; color: #333; }
+        header { background-color: #1d3557; color: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .logo-admin { font-size: 20px; font-weight: bold; }
+        .btn-refresh { background-color: #e63946; color: white; border: none; padding: 8px 15px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        main { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .section-title { color: #1d3557; border-left: 4px solid #e63946; padding-left: 10px; margin-bottom: 20px; font-size: 20px; font-weight: 700; }
+        .card-panel { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 40px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; text-align: left; }
+        th { background-color: #f1f5f9; color: #1d3557; padding: 12px; font-weight: 600; border-bottom: 2px solid #cbd5e1; }
+        td { padding: 12px; border-bottom: 1px solid #e2e8f0; color: #475569; }
+        .badge-status { background-color: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-admin"><i class="fas fa-user-shield"></i> HỆ THỐNG QUẢN LÝ ĐƠN HÀNG & TƯ VẤN</div>
+        <button class="btn-refresh" onclick="tailaiDuLieu()"><i class="fas fa-sync-alt"></i> Tải Lại Dữ Liệu</button>
+    </header>
+
+    <main>
+        <div class="card-panel">
+            <div class="section-title">🛒 Danh Sách Đơn Đặt Hàng Mới</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Khách Hàng</th>
+                        <th>Số Điện Thoại</th>
+                        <th>Địa Chỉ</th>
+                        <th>Sản Phẩm Đặt Mua</th>
+                    </tr>
+                </thead>
+                <tbody id="table-orders"></tbody>
+            </table>
+        </div>
+
+        <div class="card-panel">
+            <div class="section-title">📞 Khách Đăng Ký Tư Vấn Bảo Mật</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên / Biệt Danh</th>
+                        <th>Số Điện Thoại</th>
+                        <th>Nhu Cầu Tư Vấn</th>
+                    </tr>
+                </thead>
+                <tbody id="table-counseling"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        // Sửa đường dẫn trỏ thẳng về Backend Localhost chạy trên máy
+      const API_URL = '/api';
+
+        window.onload = function() {
+            tailaiDuLieu();
+        };
+
+        function tailaiDuLieu() {
+            layDanhSachDonHang();
+            layDanhSachTuVan();
+        }
+
+        function layDanhSachDonHang() {
+            const tbody = document.getElementById('table-orders');
+            fetch(`${API_URL}/checkout`)
+                .then(res => res.json())
+                .then(data => {
+                    tbody.innerHTML = '';
+                    if(data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#aaa;">Chưa có đơn hàng nào</td></tr>';
+                        return;
+                    }
+                    data.forEach(order => {
+                        let dsSanPham = order.cartItems.map(item => `${item.title} (SL: ${item.quantity})`).join(', ');
+                        tbody.innerHTML += `
+                            <tr>
+                                <td style="font-weight:600;">${order.customerName}</td>
+                                <td style="color:#e63946; font-weight:600;">${order.customerPhone}</td>
+                                <td>${order.customerAddress}</td>
+                                <td>${dsSanPham}</td>
+                            </tr>`;
+                    });
+                });
+        }
+
+        function layDanhSachTuVan() {
+            const tbody = document.getElementById('table-counseling');
+            fetch(`${API_URL}/counseling/request`)
+                .then(res => res.json())
+                .then(data => {
+                    tbody.innerHTML = '';
+                    if(data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#aaa;">Chưa có lịch hẹn tư vấn</td></tr>';
+                        return;
+                    }
+                    data.forEach(req => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td style="font-weight:600;">${req.customerName}</td>
+                                <td style="color:#1d3557; font-weight:600;">${req.customerPhone}</td>
+                                <td>${req.productNeed}</td>
+                            </tr>`;
+                    });
+                });
+        }
+    </script>
+</body>
+</html>
