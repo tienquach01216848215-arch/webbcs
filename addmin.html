@@ -5,101 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Quản Lý - Dược sĩ Vỹ</title>
     <style>
-        :root {
-            --primary-color: #1e3d59;
-            --secondary-color: #17b978;
-            --accent-color: #ff5e62;
-            --bg-color: #f5f7fa;
-            --text-color: #333;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 20px;
-        }
-
-        .admin-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .btn-refresh {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        .btn-refresh:hover {
-            background-color: #d94f53;
-        }
-
-        .section-box {
-            background-color: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            font-size: 20px;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--bg-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-
-        tr:hover {
-            background-color: #f1f5f9;
-        }
-
-        .empty-message {
-            text-align: center;
-            color: #999;
-            padding: 20px;
-            font-style: italic;
-        }
+        :root { --primary-color: #1e3d59; --accent-color: #ff5e62; --bg-color: #f5f7fa; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); padding: 20px; }
+        .admin-header { background-color: var(--primary-color); color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-refresh { background-color: var(--accent-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .section-box { background-color: white; padding: 25px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .section-title { font-size: 20px; color: var(--primary-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; color: var(--primary-color); font-weight: bold; }
+        .empty-message { text-align: center; color: #999; padding: 20px; font-style: italic; }
     </style>
 </head>
 <body>
@@ -114,16 +30,9 @@
         <div style="overflow-x: auto;">
             <table>
                 <thead>
-                    <tr>
-                        <th>Thời gian</th>
-                        <th>Khách Hàng</th>
-                        <th>Số Điện Thoại</th>
-                        <th>Địa Chỉ Gia Khách</th>
-                        <th>Sản Phẩm Đặt Mua</th>
-                    </tr>
+                    <tr><th>Thời gian</th><th>Khách Hàng</th><th>Số Điện Thoại</th><th>Địa Chỉ</th><th>Sản Phẩm Đặt Mua</th></tr>
                 </thead>
-                <tbody id="table-donhang">
-                    </tbody>
+                <tbody id="table-donhang"></tbody>
             </table>
         </div>
     </div>
@@ -133,75 +42,45 @@
         <div style="overflow-x: auto;">
             <table>
                 <thead>
-                    <tr>
-                        <th>Thời gian</th>
-                        <th>Tên / Biệt Danh</th>
-                        <th>Số Điện Thoại</th>
-                        <th>Nhu Cầu Tư Vấn</th>
-                    </tr>
+                    <tr><th>Thời gian</th><th>Tên / Biệt Danh</th><th>Số Điện Thoại</th><th>Nhu Cầu Tư Vấn</th></tr>
                 </thead>
-                <tbody id="table-tuvan">
-                    </tbody>
+                <tbody id="table-tuvan"></tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // Hàm tự động gọi dữ liệu từ Server Online Render đổ vào bảng công khai công nghệ
+        const HOST = window.location.origin;
+
         async function taiLaiDuLieu() {
-            // 1. Lấy dữ liệu Đơn Hàng
             try {
-                const resOrder = await fetch('/api/orders/list');
+                const resOrder = await fetch(`${HOST}/api/orders/list`);
                 const orders = await resOrder.json();
                 const tbodyDonHang = document.getElementById('table-donhang');
                 tbodyDonHang.innerHTML = '';
-
                 if(orders.length === 0) {
                     tbodyDonHang.innerHTML = '<tr><td colspan="5" class="empty-message">Chưa có đơn đặt hàng nào.</td></tr>';
                 } else {
                     orders.forEach(item => {
-                        tbodyDonHang.innerHTML += `
-                            <tr>
-                                <td>${item.createdAt || 'Vừa xong'}</td>
-                                <td><b>${item.customerName}</b></td>
-                                <td><a href="tel:${item.customerPhone}">${item.customerPhone}</a></td>
-                                <td>${item.customerAddress}</td>
-                                <td style="color:#ff5e62; font-weight:600;">${item.cartItems}</td>
-                            </tr>
-                        `;
+                        tbodyDonHang.innerHTML += `<tr><td>${item.createdAt || 'Vừa xong'}</td><td><b>${item.customerName}</b></td><td>${item.customerPhone}</td><td>${item.customerAddress}</td><td style="color:#ff5e62; font-weight:600;">${item.cartItems}</td></tr>`;
                     });
                 }
-            } catch (error) {
-                console.error("Lỗi tải đơn hàng:", error);
-            }
+            } catch (e) { console.error(e); }
 
-            // 2. Lấy dữ liệu Đăng Ký Tư Vấn
             try {
-                const resCounsel = await fetch('/api/counseling/list');
+                const resCounsel = await fetch(`${HOST}/api/counseling/list`);
                 const counsels = await resCounsel.json();
                 const tbodyTuVan = document.getElementById('table-tuvan');
                 tbodyTuVan.innerHTML = '';
-
                 if(counsels.length === 0) {
                     tbodyTuVan.innerHTML = '<tr><td colspan="4" class="empty-message">Chưa có yêu cầu tư vấn nào.</td></tr>';
                 } else {
                     counsels.forEach(item => {
-                        tbodyTuVan.innerHTML += `
-                            <tr>
-                                <td>${item.createdAt || 'Vừa xong'}</td>
-                                <td><b>${item.customerName}</b></td>
-                                <td><a href="tel:${item.customerPhone}">${item.customerPhone}</a></td>
-                                <td>${item.productNeed}</td>
-                            </tr>
-                        `;
+                        tbodyTuVan.innerHTML += `<tr><td>${item.createdAt || 'Vừa xong'}</td><td><b>${item.customerName}</b></td><td>${item.customerPhone}</td><td>${item.productNeed}</td></tr>`;
                     });
                 }
-            } catch (error) {
-                console.error("Lỗi tải tư vấn:", error);
-            }
+            } catch (e) { console.error(e); }
         }
-
-        // Tự động chạy tải dữ liệu ngay khi vừa mở trang admin lên
         window.onload = taiLaiDuLieu;
     </script>
 </body>
