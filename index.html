@@ -249,7 +249,6 @@
             color: white;
         }
 
-        /* Modal Giỏ hàng & Thanh toán cực đẹp */
         .modal {
             display: none;
             position: fixed;
@@ -368,7 +367,7 @@
 
     <div class="main-container">
         <div class="intro-section">
-            <img src="/public/duocsyvy.jpg" alt="Dược sĩ Vỹ tư vấn" class="intro-img" onerror="this.src='https://via.placeholder.com/600x350?text=Duoc+Si+Vy'">
+            <img src="duocsyvy.jpg" alt="Dược sĩ Vỹ tư vấn" class="intro-img">
             <h2>DƯỢC SĨ VỸ - Chuyên gia Hỗ trợ Sức khỏe sinh lý</h2>
             <p>Chào bạn, tôi là Dược sĩ Vỹ. Với nhiều năm kinh nghiệm trong ngành dược, tôi cam kết mang đến cho khách hàng những sản phẩm chính hãng 100%, có nguồn gốc rõ ràng, bảo mật thông tin tuyệt đối và hỗ trợ tư vấn tận tâm 24/7.</p>
         </div>
@@ -401,3 +400,179 @@
     <div class="products-grid">
         <div class="product-card">
             <span class="product-badge badge-recommend">👍 Khuyên Dùng</span>
+            <img src="durex.jpg" alt="Bao Cao Su Durex" class="product-img">
+            <div class="product-info">
+                <div class="product-name">Bao Cao Su Durex Invisible Siêu Mỏng Chính Hãng</div>
+                <div class="product-price">499.000 đ</div>
+                <button class="btn-add-cart" onclick="addToCart('Bao Cao Su Durex Invisible Siêu Mỏng', 499000)">+ Thêm vào đơn</button>
+            </div>
+        </div>
+
+        <div class="product-card">
+            <span class="product-badge badge-hot">🔥 Bán Chạy</span>
+            <img src="safefit.jpg" alt="Bao Cao Su Safefit" class="product-img">
+            <div class="product-info">
+                <div class="product-name">Bao Cao Su Safefit Siêu Khít Kéo Dài Thời Gian</div>
+                <div class="product-price">395.000 đ</div>
+                <button class="btn-add-cart" onclick="addToCart('Bao Cao Su Safefit Siêu Khít', 395000)">+ Thêm vào đơn</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🛒 Giỏ Hàng Của Bạn</h2>
+                <span class="close-btn" onclick="closeCart()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="cart-items-container"></div>
+                <div class="total-price-box">
+                    Tổng tiền: <span id="cart-total-price">0 đ</span>
+                </div>
+
+                <div class="checkout-form">
+                    <h3 style="margin-bottom: 15px; color: var(--primary-color);">📦 Thông Tin Giao Hàng</h3>
+                    <form id="checkoutForm">
+                        <div class="form-group">
+                            <label>Họ và tên người nhận</label>
+                            <input type="text" id="orderName" class="form-control" placeholder="Nhập tên người nhận hàng" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Số điện thoại nhận hàng</label>
+                            <input type="tel" id="orderPhone" class="form-control" placeholder="Nhập số điện thoại" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Địa chỉ nhận hàng toàn quốc</label>
+                            <input type="text" id="orderAddress" class="form-control" placeholder="Số nhà, tên đường, xã/phường, quận/huyện" required>
+                        </div>
+                        <button type="submit" class="btn-submit" style="background-color: var(--accent-color);">🔔 Xác Nhận Đặt Hàng Nhanh (Giao Kín Đáo)</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let giohang = [];
+
+        function addToCart(title, price) {
+            let itemX = giohang.find(item => item.title === title);
+            if (itemX) {
+                itemX.quantity += 1;
+            } else {
+                giohang.push({ title: title, price: price, quantity: 1 });
+            }
+            capNhatGiaoDienGioHang();
+            alert(`Đã thêm "${title}" vào giỏ hàng thành công!`);
+        }
+
+        function capNhatGiaoDienGioHang() {
+            let count = giohang.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').innerText = count;
+        }
+
+        function openCart() {
+            document.getElementById('cartModal').style.display = 'flex';
+            hienThiDanhSachGioHang();
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        function hienThiDanhSachGioHang() {
+            const container = document.getElementById('cart-items-container');
+            const totalText = document.getElementById('cart-total-price');
+            container.innerHTML = '';
+
+            if (giohang.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#999; padding:20px;">Giỏ hàng trống trơn. Hãy lựa chọn sản phẩm phù hợp nhé!</p>';
+                totalText.innerText = '0 đ';
+                return;
+            }
+
+            let tongtien = 0;
+            giohang.forEach((item, index) => {
+                tongtien += item.price * item.quantity;
+                container.innerHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-details">
+                            <span class="cart-item-title">${item.title}</span>
+                            <span class="cart-item-price">${(item.price).toLocaleString('vi-VN')} đ</span>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="thayDoiSoLuong(${index}, -1)">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="qty-btn" onclick="thayDoiSoLuong(${index}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+            totalText.innerText = tongtien.toLocaleString('vi-VN') + ' đ';
+        }
+
+        function thayDoiSoLuong(index, delta) {
+            giohang[index].quantity += delta;
+            if (giohang[index].quantity <= 0) {
+                giohang.splice(index, 1);
+            }
+            capNhatGiaoDienGioHang();
+            hienThiDanhSachGioHang();
+        }
+
+        document.getElementById('counselForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const customerName = document.getElementById('counselName').value;
+            const customerPhone = document.getElementById('counselPhone').value;
+            const productNeed = document.getElementById('counselProduct').value;
+
+            try {
+                const response = await fetch('/api/counseling/request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ customerName, customerPhone, productNeed })
+                });
+                const data = await response.json();
+                alert(data.message);
+                document.getElementById('counselForm').reset();
+            } catch (error) {
+                alert('❌ Gửi yêu cầu thất bại! Vui lòng kiểm tra lại kết nối mạng.');
+            }
+        });
+
+        document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (giohang.length === 0) {
+                alert('Giỏ hàng đang trống, quý khách vui lòng chọn sản phẩm trước khi đặt hàng!');
+                return;
+            }
+
+            const customerName = document.getElementById('orderName').value;
+            const customerPhone = document.getElementById('orderPhone').value;
+            const customerAddress = document.getElementById('orderAddress').value;
+
+            try {
+                const response = await fetch('/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customerName,
+                        customerPhone,
+                        customerAddress,
+                        cartItems: giohang
+                    })
+                });
+                const data = await response.json();
+                alert(data.message);
+                giohang = [];
+                capNhatGiaoDienGioHang();
+                closeCart();
+                document.getElementById('checkoutForm').reset();
+            } catch (error) {
+                alert('❌ Đặt hàng thất bại! Hệ thống máy chủ đang bận, vui lòng thử lại sau.');
+            }
+        });
+    </script>
+</body>
+</html>
