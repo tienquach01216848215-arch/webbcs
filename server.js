@@ -4,7 +4,7 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Cấu hình nhận dữ liệu form và JSON
+// Cấu hình nhận dữ liệu form và JSON cực kỳ quan trọng
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -40,7 +40,7 @@ db.serialize(() => {
     )`);
 });
 
-// Cấu hình CORS bảo mật công khai
+// Cấu hình CORS bảo mật nhận dữ liệu mượt mà
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -49,13 +49,13 @@ app.use((req, res, next) => {
     next();
 });
 
-// Điều hướng trang chủ và trang admin
+// Điều hướng trang chủ và trang admin công khai (ĐÃ SỬA THÀNH admin.html)
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'addmin.html'));
+    res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
 // ==================== HỆ THỐNG API XỬ LÝ DỮ LIỆU ====================
@@ -99,5 +99,5 @@ app.get('/api/orders/list', (req, res) => {
 
 // Kích hoạt Server lắng nghe cổng kết nối
 app.listen(PORT, () => {
-    console.log(`🚀 Server online đang chạy tại cổng ${PORT}`);
+    console.log('🚀 Server online đang chạy mượt mà!');
 });
