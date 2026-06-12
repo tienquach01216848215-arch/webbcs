@@ -1,6 +1,7 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs'); // Thư viện kiểm tra file hệ thống
 const app = express();
 const PORT = process.env.PORT || 10000;
 
@@ -8,7 +9,7 @@ const PORT = process.env.PORT || 10000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Cho phép truy cập trực tiếp các file ảnh ở thư mục gốc
+// Cho phép truy cập trực tiếp các file ở thư mục gốc
 app.use(express.static(__dirname));
 
 // Kết nối hoặc tự động tạo cơ sở dữ liệu SQLite Online
@@ -49,13 +50,20 @@ app.use((req, res, next) => {
     next();
 });
 
-// Điều hướng trang chủ và trang admin công khai (ĐÃ SỬA THÀNH admin.html)
+// Điều hướng trang chủ công khai
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// SỬA LỖI NOT FOUND: Tự động quét tìm file admin.html hoặc addmin.html để hiển thị công khai
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin.html'));
+    if (fs.existsSync(path.join(__dirname, 'admin.html'))) {
+        res.sendFile(path.join(__dirname, 'admin.html'));
+    } else if (fs.existsSync(path.join(__dirname, 'addmin.html'))) {
+        res.sendFile(path.join(__dirname, 'addmin.html'));
+    } else {
+        res.status(404).send('❌ Lỗi: Server không tìm thấy file admin.html hoặc addmin.html ở thư mục gốc của bạn!');
+    }
 });
 
 // ==================== HỆ THỐNG API XỬ LÝ DỮ LIỆU ====================
