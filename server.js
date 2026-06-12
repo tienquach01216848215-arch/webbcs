@@ -33,7 +33,10 @@ db.serialize(() => {
     )`);
 });
 
-// Cấu hình CORS để giao diện nhận dữ liệu mượt mà
+// Cấu hình CORS và định nghĩa thư mục chứa file tĩnh công khai
+app.use(express.static(__dirname)); 
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -42,8 +45,14 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'addmin.html')));
+// Điều hướng trang chủ và trang admin chuẩn hệ điều hành Render (Linux)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'addmin.html'));
+});
 
 // API gửi yêu cầu tư vấn
 app.post('/api/counseling/request', (req, res) => {
