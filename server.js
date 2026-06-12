@@ -4,13 +4,12 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Cấu hình nhận dữ liệu từ form và JSON mượt mà
+// Cấu hình nhận dữ liệu form và JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// SỬA LỖI HIỂN THỊ ẢNH: Cấu hình chuẩn xác quyền truy cập thư mục gốc và thư mục public trên Render
-app.use(express.static(__dirname)); 
-app.use('/public', express.static('public'));
+// Cho phép truy cập trực tiếp các file ảnh ở thư mục gốc
+app.use(express.static(__dirname));
 
 // Kết nối hoặc tự động tạo cơ sở dữ liệu SQLite Online
 const db = new sqlite3.Database(path.join(__dirname, 'database.db'), (err) => {
@@ -23,7 +22,6 @@ const db = new sqlite3.Database(path.join(__dirname, 'database.db'), (err) => {
 
 // Tự động tạo bảng lưu dữ liệu nếu chưa có
 db.serialize(() => {
-    // Tạo bảng lưu yêu cầu tư vấn ẩn danh
     db.run(`CREATE TABLE IF NOT EXISTS TuVan (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         customerName TEXT,
@@ -32,7 +30,6 @@ db.serialize(() => {
         createdAt TEXT
     )`);
 
-    // Tạo bảng lưu đơn đặt hàng nhanh công khai
     db.run(`CREATE TABLE IF NOT EXISTS DonHang (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         customerName TEXT,
@@ -43,7 +40,7 @@ db.serialize(() => {
     )`);
 });
 
-// Cấu hình CORS để giao diện nhận dữ liệu mượt mà không bị chặn bảo mật
+// Cấu hình CORS bảo mật công khai
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -52,19 +49,17 @@ app.use((req, res, next) => {
     next();
 });
 
-// Điều hướng trang chủ bán hàng cho khách truy cập
+// Điều hướng trang chủ và trang admin
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Điều hướng trang quản trị đơn hàng cho Dược sĩ Vỹ
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'addmin.html'));
 });
 
 // ==================== HỆ THỐNG API XỬ LÝ DỮ LIỆU ====================
 
-// 1. API nhận yêu cầu tư vấn bảo mật từ trang chủ
 app.post('/api/counseling/request', (req, res) => {
     const { customerName, customerPhone, productNeed } = req.body;
     const now = new Date().toLocaleString('vi-VN');
@@ -76,7 +71,33 @@ app.post('/api/counseling/request', (req, res) => {
         });
 });
 
-// 2. API lấy danh sách yêu cầu tư vấn hiển thị lên trang admin
 app.get('/api/counseling/list', (req, res) => {
     db.all(`SELECT * FROM TuVan ORDER BY id DESC`, [], (err, rows) => {
-        if (err) return res.status(500).
+        if (err) return res.status(500).json({ message: err.message });
+        res.status(200).json(rows);
+    });
+});
+
+app.post('/api/checkout', (req, res) => {
+    const { customerName, customerPhone, customerAddress, cartItems } = req.body;
+    const now = new Date().toLocaleString('vi-VN');
+    let dsSanPham = cartItems.map(item => `${item.title} (SL: ${item.quantity})`).join(', ');
+
+    db.run(`INSERT INTO DonHang (customerName, customerPhone, customerAddress, cartItems, createdAt) VALUES (?, ?, ?, ?, ?)`,
+        [customerName, customerPhone, customerAddress, dsSanPham, now], (err) => {
+            if (err) return res.status(500).json({ message: err.message });
+            res.status(200).json({ message: "Đặt hàng thành công! Dược sĩ Vỹ sẽ sớm liên hệ giao hàng." });
+        });
+});
+
+app.get('/api/orders/list', (req, res) => {
+    db.all(`SELECT * FROM DonHang ORDER BY id DESC`, [], (err, rows) => {
+        if (err) return res.status(500).json({ message: err.message });
+        res.status(200).json(rows);
+    });
+});
+
+// Kích hoạt Server lắng nghe cổng kết nối
+app.listen(PORT, () => {
+    console.log(`🚀 Server online đang chạy tại cổng ${PORT}`);
+});
